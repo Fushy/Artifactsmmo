@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 from pathlib import Path
+from pickle import dump, load
 import shutil
 from typing import Callable, Optional
 
@@ -16,6 +17,17 @@ from typing import Callable, Optional
 
 # os.mkdir(directory)
 # list(map(lambda d: os.makedirs(d, exist_ok=True), dirs))
+
+
+def save_obj_to_file(obj, file_name):
+    with open(file_name + ".plk", 'wb') as file:
+        dump(obj, file)
+
+
+def get_obj_from_file(file_name):
+    with open(file_name + ".plk", 'rb') as file:
+        return load(file)
+
 
 def is_file_exist(path: str) -> bool:
     """ Due to concurrency, after an is_existing call, it may be possible that the file doesn't exist,

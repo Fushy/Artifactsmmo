@@ -5,32 +5,35 @@ import traceback
 from time import sleep
 from typing import Callable, Optional, Iterable
 
+from selenium import webdriver
 from msedge.selenium_tools import Edge, EdgeOptions
 from msedge.selenium_tools.webdriver import WebDriver
 from selenium.common.exceptions import InvalidSessionIdException, TimeoutException, \
     WebDriverException, NoSuchWindowException, StaleElementReferenceException, NoSuchElementException, \
-    MoveTargetOutOfBoundsException, ElementNotInteractableException, ElementClickInterceptedException
+    MoveTargetOutOfBoundsException, ElementNotInteractableException, ElementClickInterceptedException, SessionNotCreatedException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webelement import WebElement
 from urllib3.exceptions import NewConnectionError, MaxRetryError
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
 import Alert
 import Classes
 from Colors import printc
 from Enum import FIRST
 from Files import get_first_line
-from Introspection import current_lines, frameinfo
+from Introspection import current_lines, frameinfo, get_current_file_path
 from Seleniums.Selenium import profile_name, check_find_fun, get_element_text, get_element_class
 from Times import now, elapsed_seconds
 from Util import is_iter_but_not_str
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 
 last_browser_set = now()
 
-
 class Browser:
+    """ If Cloudflare protection, add the Chrome Cloudflare Helper extension
+        https://chromewebstore.google.com/detail/chrome-cloudflare-helper/mlfmmcdkndpcaffjdbbjoodliplkpkmj"""
     # noinspection PyTypeChecker
     def __init__(self, point=None, profile=None, headless=False):
         self.point = point
@@ -94,8 +97,9 @@ class Browser:
         """ Download drivers
             # https://pypi.org/project/selenium/
             # https://developer.microsoft.com/fr-fr/microsoft-edge/tools/webdriver/
-            # https://chromedriver.chromium.org/downloads
             # https://github.com/operasoftware/operachromiumdriver/releases
+            # https://github.com/mozilla/geckodriver/releases
+            # https://chromedriver.chromium.org/downloads https://googlechromelabs.github.io/chrome-for-testing/
             # edge://version/ - set a profile path location to create a new profile
         """
         # try:
@@ -114,52 +118,46 @@ class Browser:
         if num != "" and profile is not None:
             end = profile[profile.find("\\Profiles\\"):]
             self.profile = r"user-data-dir=C:\Users\Alexis\Documents" + end
-        options = EdgeOptions()
-        options.use_chromium = True
+        # options = webdriver.FirefoxOptions()
+        options = webdriver.ChromeOptions()
+        # options = EdgeOptions()
         if self.headless:
             options.add_argument("headless")
         if self.profile is not None:
             options.add_argument(self.profile)
-        # options.add_argument("disable-gpu")
-        # req_proxy = RequestProxy()  # you may get different number of proxy when  you run this at each time
-        # proxies = req_proxy.get_proxy_list()  # this will create proxy list
-        # PROXY = proxies[0].get_address()
-        # print(proxies)
-        # webdriver.DesiredCapabilities.EDGE['proxy'] = {
-        #     "httpProxy": PROXY,
-        #     "ftpProxy": PROXY,
-        #     "sslProxy": PROXY,
-        #     "proxyType": "MANUAL",
-        # }
-        # print(
-        #     r"{}{}..{}Drivers{}msedgedriver.exe"
-        #         .date_format(inspect.currentframe().f_code.co_filename, os.path.sep, os.path.sep, os.path.sep))
+        options.add_argument('--disable-blink-features=AutomationControlled')
+
         while elapsed_seconds(last_browser_set) < 0.1:
             sleep(0.1)
         last_browser_set = now()
         pathname = frameinfo(2)["pathname"]
         # pathname = pathname if num == "" else "C:\\Users\\Alexis\\Documents\\Profiles\\"
         # exe_path = r"{}Drivers{}chromedriver{}.exe".date_format(pathname, os.path.sep, num if num else "")
-        exe_path = r"{}Drivers{}msedgedriver.exe".format(pathname, os.path.sep)
-        # exe_path = r"B:\_Documents\Pycharm\Util\Seleniums\Drivers\msedgedriver.exe"
-        driver = Edge(options=options, executable_path=exe_path)
-        driver.set_window_position(self.point.x, self.point.y)
-        driver.set_window_size(1920, 1080)
-        self.driver = driver
-        self.print("set_browser", False)
-        # except SessionNotCreatedException:
-        #     printc("SessionNotCreatedException", background_color="red")
-        #     while True:
-        #         Alert.say("Have to download new browser driver version")
-        #         sleep(3)
-        # except InvalidArgumentException:
-        #     raise InvalidSessionIdException("profile is already open")
-        # except WebDriverException as err:
-        #     sleep(5)
-        #     self.printc("WebDriverException" + str(err), color="black", background_color="red")
-        #     # return self.set_browser(profile)
-        #     self.quit()
-        #     return Browser(SCREENS[1], profile=self.profile)
+        # exe_path = r"{}Drivers{}msedgedriver.exe".format(pathname, os.path.sep)
+        # exe_path = r"{}Drivers{}operadriver.exe".format(pathname, os.path.sep).replace("\\", "/")
+        # exe_path = r"{}Drivers{}operadriver.exe".format(pathname, os.path.sep)
+        exe_path = r"{}Drivers{}chromedriver.exe".format(pathname, os.path.sep)
+        # exe_path = r"{}Drivers{}msedgedriver.exe".format(pathname, os.path.sep)
+        try:
+            # driver = Edge(options=options, executable_path=exe_path)
+            driver = webdriver.Chrome(options=options, executable_path=exe_path)
+            driver.set_window_position(self.point.x, self.point.y)
+            driver.set_window_size(1920, 1080)
+            self.driver = driver
+            self.print("set_browser", False)
+        except SessionNotCreatedException:
+            printc("SessionNotCreatedException", background_color="red")
+            while True:
+                Alert.say("Have to download new browser driver version")
+                sleep(3)
+        except InvalidArgumentException:
+            raise InvalidSessionIdException("profile is already open")
+        except WebDriverException as err:
+            sleep(5)
+            self.printc("WebDriverException" + str(err), color="black", background_color="red")
+            # return self.set_browser(profile)
+            self.quit()
+            return Browser(SCREENS[1], profile=self.profile)
 
     def update_windows_url(self) -> Optional[str]:
         try:
@@ -840,9 +838,22 @@ class Browser:
 #     input("end")
 
 if __name__ == '__main__':
-    # s = screen_rect(1000)
-    # browser = Browser(profile=r"B:\_Documents\Profile")
-    browser = Browser()
+    ## s = screen_rect(1000)
+    browser = Browser(profile=r"user-data-dir=B:\_Documents\Ragnarok_uaro")
+    # browser = Browser()
     # # r"user-data-dir=C:\Users\alexi_mcstqby\Documents\Bots\AlienWorlds\Profiles\progk")
     # browser.new_page('https://www.expressvpn.com/what-is-my-ip')
-    browser.new_page('https://fr.tradingview.com/chart/dOWkigGU/?symbol=BINANCE%3ABTCBUSD')
+    # browser.new_page('https://fr.tradingview.com/chart/dOWkigGU/?symbol=BINANCE%3ABTCBUSD')
+    browser.new_page('https://uaro.net/')
+    # browser.new_page('https://google.com')
+
+    # from selenium.webdriver.chrome.service import Service
+    # from selenium.webdriver.common.by import By
+    # from selenium.webdriver.support.ui import WebDriverWait
+    # from selenium.webdriver.support import expected_conditions as EC
+    # from webdriver_manager.chrome import ChromeDriverManager
+    # options = webdriver.ChromeOptions()
+    # options.add_argument('--disable-blink-features=AutomationControlled')
+    # driver = webdriver.Chrome(options=options)
+    # driver.get('https://uaro.net/')
+    # input()

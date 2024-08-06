@@ -5,7 +5,7 @@ from threading import Thread
 from time import sleep
 from typing import Callable
 
-import Alert
+# import Alert
 from Files import is_file_exist, delete, run_file
 from Introspection import check_frames, frameinfo
 
@@ -26,8 +26,8 @@ def run(fun: Callable, arguments: dict = {}, wait_a_bit: float = 0.0, alert_if_e
             if print_if_error:
                 print(traceback.format_exc(), file=sys.stderr)
                 print(name or fun.__name__, file=sys.stderr)
-            if alert_if_error:
-                Alert.alert(str(name or fun.__name__) + "\n\n" + traceback.format_exc(), level=3)
+            # if alert_if_error:
+            #     Alert.alert(str(name or fun.__name__) + "\n\n" + traceback.format_exc(), level=3)
 
     thread = Thread(target=aux, daemon=daemon)
     if name:

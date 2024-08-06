@@ -223,18 +223,28 @@ def loop_say(msg, condition: Classes.Condition, seconds=30, blocking=True):
         Threads.run(fun)
 
 
-def alert(msg: str, level: int = 0, after_sleep: float = 30):
+def alert(msg: str, level: int = 0, after_sleep: float = 30, debug=True):
+    """ Telegram message & vocal alert
+    level 0: telegram message
+    level 1: telegram message & vocal alert
+    level 2: loop vocal alert
+    level 3: loop telegram message & vocal alert
+    """
     debug_change = True
     if level == 0:
         Threads.run(lambda: Telegrams.message(msg))
     elif level == 1:
         Telegrams.message(msg)
-        say(msg)
+        say(msg, debug=debug)
         sleep(after_sleep)
+    elif level == 2:
+        while debug_change:
+            say(msg, debug=debug)
+            sleep(after_sleep)
     elif level == 3:
         while debug_change:
             Telegrams.message(msg)
-            say(msg)
+            say(msg, debug=debug)
             sleep(after_sleep)
 
 
@@ -296,10 +306,14 @@ def ping_is_alive(name):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) <= 1:
+        # print("b", sys.argv)
+        alert("speech")
+        # say("speech")
     # run(ping_test)
     # run(ping_listener)
     # speech None en 1 False 1 False True False True
-    if len(sys.argv) > 1:
+    else:
         args = sys.argv[-9:]
         speech = " ".join(sys.argv[1:-9])
         # print(sys.argv, args, speech)
@@ -311,9 +325,6 @@ if __name__ == '__main__':
         just_create_file = False if args[5] == "False" else args[5]
         save_sound = True if args[6] == "True" else args[6]
         say(speech, filename, lang, speed, blocking, volume_ratio, just_create_file, save_sound, False, False)
-    else:
-        # print("b", sys.argv)
-        say("speech")
     # _say("This is a long message !", blocking=True)
     # _say("This is a long message !", speed_ratio=1.5, blocking=True)
     # alert("telegram message", after_sleep=0)

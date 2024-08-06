@@ -6,6 +6,7 @@ from time import sleep
 from typing import Optional
 
 
+
 def get_current_abspath() -> Path:
     return Path(os.path.abspath(os.getcwd()))
 
@@ -93,8 +94,10 @@ def frameinfo(backtimes=0, debug=False) -> Optional[dict]:
         "local_args": local_args
     }
 
+
 def print_line(extra=""):
     print(frameinfo(2)["line"], ":", extra)
+
 
 def check_frames():
     for i in range(10):
@@ -120,8 +123,10 @@ def current_lines(start_depth=2, end_depth: Optional[int] = None):
         return lst
     return lst
 
+
 def get_current_function_name():
     return currentframe().f_back.f_code.co_name
+
 
 # def frameinfo_stack(stack=0, debug=False):
 #     """ ne fonctionne pas dans les threads"""

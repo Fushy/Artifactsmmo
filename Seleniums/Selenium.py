@@ -6,7 +6,7 @@ from msedge.selenium_tools.webdriver import WebDriver
 from selenium.common.exceptions import NoAlertPresentException, \
     StaleElementReferenceException
 from selenium.webdriver import Chrome, ChromeOptions
-from selenium.webdriver.opera.webdriver import OperaDriver
+# from selenium.webdriver.opera.webdriver import OperaDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 from Alert import notify_win

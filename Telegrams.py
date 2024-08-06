@@ -5,7 +5,7 @@ import traceback
 import telegram
 from telegram import Update, Bot
 from telegram.error import NetworkError
-from telegram.ext import CallbackContext, Updater, Dispatcher, MessageHandler, Filters, CommandHandler
+from telegram.ext import CallbackContext, Updater, MessageHandler, CommandHandler
 
 from Files import get_first_line
 import Threads
@@ -44,13 +44,13 @@ def message(msg: str, to: str = None):
     api_key: str = get_first_line("B:\\_Documents\\APIs\\telegram_key")
     bot: Bot = telegram.Bot(token=api_key)
     updater: Updater = Updater(token=api_key, use_context=True)
-    dispatcher: Dispatcher = updater.dispatcher
+    dispatcher = updater.dispatcher
     echo_msg_handler: MessageHandler = MessageHandler(Filters.text & (~Filters.command), echo)
     dispatcher.add_handler(echo_msg_handler)
     start_cmd_handler: CommandHandler = CommandHandler('start', start)
     dispatcher.add_handler(start_cmd_handler)
     try:
-        bot.send_message(chat_id=id_to, text=msg)
+        bot.send_message(chat_id=id_to, text=msg[:1000])
     except NetworkError:
         print(traceback.format_exc(), file=sys.stderr)
         pass
