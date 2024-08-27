@@ -61,6 +61,21 @@ COMMON_CHARS = (string.ascii_lowercase
 # ⬛⬜
 # ♛♕♘♞♖♜♝♗
 
+
+def chronometer(seconds, pre="", extra=""):
+    start = now()
+    elapsed = (now() - start).total_seconds()
+    while elapsed < seconds:
+        elapsed = (now() - start).total_seconds()
+        if (seconds - elapsed) > 1:
+            sleep(1)
+            print(pre, "{:.2f}".format(seconds - elapsed), extra)
+        elif (seconds - elapsed) < 0.2:
+            sleep(0.1)
+            print(pre, "{:.2f}".format(seconds - elapsed), extra)
+        else:
+            sleep(1)
+
 def dict_retire_none(dictionnary):
     return {key: value for key, value in dictionnary.items() if value is not None}
 

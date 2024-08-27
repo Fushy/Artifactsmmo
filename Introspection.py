@@ -6,7 +6,6 @@ from time import sleep
 from typing import Optional
 
 
-
 def get_current_abspath() -> Path:
     return Path(os.path.abspath(os.getcwd()))
 
@@ -125,7 +124,19 @@ def current_lines(start_depth=2, end_depth: Optional[int] = None):
 
 
 def get_current_function_name():
+    a = currentframe().f_back.f_code.co_name
+    b = currentframe().f_back.f_code
+    c = currentframe().f_back
+    d = currentframe()
     return currentframe().f_back.f_code.co_name
+
+
+def get_current_parameters():
+    frame = currentframe().f_back
+    locals = frame.f_locals
+    args = frame.f_code.co_varnames
+    args = args if args[0] != "self" else args[1:]
+    return {arg: locals[arg] for arg in args if arg in locals}
 
 
 # def frameinfo_stack(stack=0, debug=False):
