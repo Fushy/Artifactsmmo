@@ -31,23 +31,25 @@ def task(func):
         try:
             result: CharacterSchema = func(*args, **kwargs)
         except ApiException as e:
-            print(frameinfo(3)["line"], name, e.status, "sleep 1 sec", e.body, e.headers, file=stderr)
-            if e.status == 478:
-                # Missing item or insufficient quantity.
-                return 478
+            print(frameinfo(1)["line"], frameinfo(2)["line"], frameinfo(3)["line"], frameinfo(4)["line"], frameinfo(5)["line"],
+                  name, e.status, "sleep 1 sec", e.body, e.headers, file=stderr)
+            # if e.status == 478:
+            #     # Missing item or insufficient quantity.
+            #     return 478
             # if e.status == 497:
             #     print(e.status, e.body["error"], file=stderr)
             #     return
             # await asyncio.sleep(1)
-            sleep(0.1)
+            sleep(2)
             result = wrapper(*args, **kwargs)
         # data: SkillDataSchema = result.data
         # result: CharacterSchema = CharacterSchema(**data.character)
-        V["characters"][name]["data"] = result
+        V["characters"][name]["data"].__dict__ = result.__dict__
         V['characters'][name]['last_action'] = func.__name__
-        sleep_time = get_cooldown_from_result(V["characters"][name]["data"])
-        chronometer(sleep_time, extra=f"{parameters} {V['characters'][name]['last_action']}"
-                                      f"{API.get_inventory(name, result.inventory)}")
+        wait_cooldown_from_result(result)
+        # sleep_time = get_cooldown_from_result(V["characters"][name]["data"])
+        # chronometer(sleep_time, extra=f"{parameters} {V['characters'][name]['last_action']}"
+        #                               f"{API.get_inventory(name, result.inventory)}")
         # sleep(sleep_time)
         # else:
         # await asyncio.sleep(sleep_time)
@@ -107,13 +109,11 @@ class ArtifactsAPI:
         return CharacterSchema(
             **self.api_mycharacter.action_deposit_bank_my_name_action_bank_deposit_post(name=name, body=data).data.character)
 
-    def bank_deposit_items(self, name: str, codes_quantities: dict[str, int]):
-        for code, quantity in codes_quantities.items():
-            wait_cooldown_from_result(self.bank_deposit_item(name, code, quantity))
-
-    def bank_deposit_all_items(self, name: str, inventory: dict[str, int], except_items=None):
-        return self.bank_deposit_items(name, {item: qtt for (item, qtt) in inventory.items()
-                                              if not except_items or item not in except_items})
+    @task
+    def get_from_bank(self, name, code, quantity):
+        data = {"code": code, "quantity": quantity}
+        return CharacterSchema(
+            **self.api_mycharacter.action_withdraw_bank_my_name_action_bank_withdraw_post(body=data, name=name).data.character)
 
     @task
     def bank_deposit_gold(self, name: str, quantity: int) -> CharacterSchema:
@@ -121,15 +121,21 @@ class ArtifactsAPI:
         return CharacterSchema(**self.api_mycharacter.action_deposit_bank_gold_my_name_action_bank_deposit_gold_post(
             name=name, body=data).data.character)
 
+    def bank_deposit_items(self, name: str, codes_quantities: dict[str, int]):
+        for code, quantity in codes_quantities.items():
+            self.bank_deposit_item(name, code, quantity)
+
+    def bank_deposit_all_items(self, name: str, inventory: dict[str, int], except_items=None):
+        return self.bank_deposit_items(name, {item: qtt for (item, qtt) in inventory.items()
+                                              if not except_items or item not in except_items})
+
+
     def get_characters_logs(self, name: str):
         return OrderedDict(sorted((get_all_record_from_pages(
             self.api_mycharacter.get_all_characters_logs_my_logs_get, ["character", "created_at", "type"], stack=True).items())))
 
     def get_character(self, name: str):
-        V["characters"][name]["data"] = self.api_character.get_character_characters_name_get(name=name).data
-        # V["characters"][name]["position"] = V["characters"][name]["x"], V["characters"][name]["y"]
-        # todo make a V class, default access position create (x, y)
-        return V["characters"][name]["data"]
+        return self.api_character.get_character_characters_name_get(name=name).data
 
     def get_my_characters(self) -> list[dict]:
         return self.api_mycharacter.get_my_characters_my_characters_get().data
@@ -142,11 +148,8 @@ class ArtifactsAPI:
     def get_server_characters(self):
         return self.api_character.get_all_characters_characters_get()
 
-    def get_inventory(self, name: str, inventory=None, choose_key=None):
-        if inventory is None:
-            inventory = self.get_character(name).inventory
-        # char = next(filter(lambda item: item["name"] == name, inventory))
-        return get_inventory(inventory, choose_key)
+    def get_inventory(self, name: str, choose_key=None):
+        return get_inventory(name, choose_key)
 
     def get_item(self, code: str) -> SingleItemSchema:
         """{
@@ -308,10 +311,6 @@ class ArtifactsAPI:
             bank = self.get_bank_items()
         return code in bank and bank[code] >= quantity
 
-    def get_from_bank(self, name, code, quantity):
-        data = {"code": code, "quantity": quantity}
-        return CharacterSchema(
-            **self.api_mycharacter.action_withdraw_bank_my_name_action_bank_withdraw_post(body=data, name=name).data.character)
 
 
 # return self.api_myaccount.get_bank_items_my_bank_items_get()
@@ -325,7 +324,7 @@ def wait_cooldown_from_result(result: CharacterSchema) -> bool:
     sleep_time = (V["server_offset_time"] - (now() - cooldown_end)).total_seconds()
     if sleep_time > 0:
         name = result.name
-        chronometer(sleep_time, extra=f"{name} {V['characters'][name]['last_action']} {get_inventory(result.inventory)}")
+        chronometer(sleep_time, extra=f"{name} {V['characters'][name]['last_action']} {get_inventory(result.name)}")
     return True
 
 
@@ -374,15 +373,16 @@ def get_map_from_resource(async_req=None, min_level=None, max_level=None, level=
     resources = API.get_resources(**dictionnary).data
     results = []
     for resource in resources:
-        # print(resource["code"], ":", " ".join([d["code"] for d in resource["drops"]]), resource["drops"])
-        pos = API.get_maps(content_code=resource["code"])
-        results.append(pos)
-        # print(pos)
-        # print()
+        positions = API.get_maps(content_code=resource["code"])
+        for position in positions:
+            positions[position]["level"] = resource["level"]
+            positions[position]["skill"] = resource["skill"]
+        results.append(positions)
     return results
 
 
-def get_inventory(inventory, choose_key=None):
+def get_inventory(name, choose_key=None):
+    inventory = V["characters"][name]["data"].inventory
     if choose_key:
         return [(item[choose_key] if choose_key else item) for item in inventory if item["quantity"] > 0]
     return {inventory["code"]: inventory["quantity"] for inventory in inventory if inventory["quantity"] > 0}
@@ -395,7 +395,7 @@ def get_inventory_sum(inventory):
 def get_max_amount_to_craft(name, code, max_inventory_quantity=None, inventory=None):
     if inventory is None or max_inventory_quantity is None:
         data = API.get_character(name)
-        inventory = get_inventory(data.inventory)
+        # inventory = get_inventory(data.inventory)
         max_inventory_quantity = data.inventory_max_items
     recipes = API.get_item(code).item["craft"]["items"]
     amount_to_craft = 0
@@ -489,14 +489,14 @@ if __name__ == '__main__':
     # monsters = API.get_all_monster()
     # maps = API.get_all_maps()
     # craft_table = get_craft_table()
-    craftable = get_current_craftable_items()
+    # craftable = get_current_craftable_items()
     # craftable_effect = get_craft_table(effect="attack")
     # craftable_level = get_current_craftable_items(max_level=1)
     # craftable_skill = get_current_craftable_items(type_=Item.CraftSkill.WOODCUTTING)
 
     # r = API.get_character("Fushy")
     # r = API.get_characters_logs("Fushy")
-    # r = get_map_from_resource(min_level=1, max_level=1, level=0)
+    find_map = get_map_from_resource(min_level=1, max_level=1, level=20)
 
     # r = get_max_amount_to_craft("Yshuf", "copper")
     1

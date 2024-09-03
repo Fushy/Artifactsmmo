@@ -261,117 +261,139 @@ class Monster:
 
 ### RESOURCES ###
 class Resource:
-    ASH_TREE = 'ash_tree'
-    BASS_FISHING_SPOT = 'bass_fishing_spot'
-    BIRCH_TREE = 'birch_tree'
-    COAL_ROCKS = 'coal_rocks'
-    COPPER_ROCKS = 'copper_rocks'
-    DEAD_TREE = 'dead_tree'
-    GOLD_ROCKS = 'gold_rocks'
-    GUDGEON_FISHING_SPOT = 'gudgeon_fishing_spot'
-    IRON_ROCKS = 'iron_rocks'
-    SHRIMP_FISHING_SPOT = 'shrimp_fishing_spot'
-    SPRUCE_TREE = 'spruce_tree'
-    TROUT_FISHING_SPOT = 'trout_fishing_spot'
+    ASH_TREE = "ash_tree"
+    BASS_FISHING_SPOT = "bass_fishing_spot"
+    BIRCH_TREE = "birch_tree"
+    COAL_ROCKS = "coal_rocks"
+    COPPER_ROCKS = "copper_rocks"
+    DEAD_TREE = "dead_tree"
+    GOLD_ROCKS = "gold_rocks"
+    GUDGEON_FISHING_SPOT = "gudgeon_fishing_spot"
+    IRON_ROCKS = "iron_rocks"
+    MAGIC_TREE = "magic_tree"
+    SHRIMP_FISHING_SPOT = "shrimp_fishing_spot"
+    SPRUCE_TREE = "spruce_tree"
+    STRANGE_ROCKS = "strange_rocks"
+    TROUT_FISHING_SPOT = "trout_fishing_spot"
 
-    class Skill:
-        FISHING = 'fishing'
-        MINING = 'mining'
-        WOODCUTTING = 'woodcutting'
+    class Skills:
+        MINING = "mining"
+        FISHING = "fishing"
+        WOODCUTTING = "woodcutting"
 
     class Drops:
-        BASS = "bass"
-        ASH_WOOD = "ash_wood"
-        COAL = "coal"
-        SPRUCE_WOOD = "spruce_wood"
-        TROUT = "trout"
-        IRON_ORE = "iron_ore"
-        RUBY = "ruby"
-        SAPPHIRE = "sapphire"
-        TOPAZ = "topaz"
+        STRANGE_ORE = "strange_ore"
         GOLD_ORE = "gold_ore"
-        SHRIMP = "shrimp"
-        EMERALD = "emerald"
-        GOLDEN_SHRIMP = "golden_shrimp"
-        DEAD_WOOD = "dead_wood"
+        IRON_ORE = "iron_ore"
+        SPRUCE_WOOD = "spruce_wood"
+        COAL = "coal"
+        TROUT = "trout"
+        MAGIC_WOOD = "magic_wood"
+        SAP = "sap"
         COPPER_ORE = "copper_ore"
+        DEAD_WOOD = "dead_wood"
+        RUBY = "ruby"
         BIRCH_WOOD = "birch_wood"
+        DIAMOND = "diamond"
+        GOLDEN_SHRIMP = "golden_shrimp"
+        MAGIC_SAP = "magic_sap"
+        SHRIMP = "shrimp"
+        SAPPHIRE = "sapphire"
+        BASS = "bass"
+        TOPAZ = "topaz"
         GUDGEON = "gudgeon"
+        EMERALD = "emerald"
+        ASH_WOOD = "ash_wood"
 
 
 ### MAPS ###
 class Map:
-    CITY = 'City'
-    FOREST = 'Forest'
-    FOREST_FORGE = 'Forest (Forge)'
-    GRAVEYARD = 'Graveyard'
-    LAKE = 'Lake'
-    SPAWN = 'Spawn'
+    CITY = "City"
+    FOREST = "Forest"
+    FOREST_FORGE = "Forest (Forge)"
+    GRAVEYARD = "Graveyard"
+    LAKE = "Lake"
+    SPAWN = "Spawn"
 
     class Position:
-        COW = [(0, 2)]
-        OGRE = [(-5, -5), (-5, -4)]
-        GEARCRAFTING = [(3, 1)]
-        RED_SLIME = [(1, -1), (2, -2)]
         LICH = [(9, 7)]
-        WEAPONCRAFTING = [(2, 1)]
-        YELLOW_SLIME = [(1, -2), (4, -1)]
-        MONSTERS = [(1, 2)]
-        BLUE_SLIME = [(0, -2), (2, -1)]
-        COPPER_ROCKS = [(2, 0)]
-        FLYING_SERPENT = [(5, 4), (5, 6)]
-        ASH_TREE = [(-1, 0), (6, 1)]
-        OWLBEAR = [(10, 1), (10, 2)]
-        IRON_ROCKS = [(1, 7)]
-        GOLD_ROCKS = [(10, -4)]
-        GUDGEON_FISHING_SPOT = [(4, 2)]
-        WOLF = [(-3, 0), (-2, 1)]
         COAL_ROCKS = [(1, 6)]
-        TROUT_FISHING_SPOT = [(-2, 6)]
-        MUSHMUSH = [(5, 3), (6, 4)]
-        SPRUCE_TREE = [(-2, 5), (2, 6)]
-        BIRCH_TREE = [(-1, 6), (3, 5)]
-        JEWELRYCRAFTING = [(1, 3)]
-        COOKING = [(1, 1)]
-        WOODCUTTING = [(-2, -3)]
-        SHRIMP_FISHING_SPOT = [(5, 2)]
-        VAMPIRE = [(10, 6), (10, 8)]
-        BASS_FISHING_SPOT = [(-3, 6)]
-        GREEN_SLIME = [(0, -1), (3, -2)]
-        BANK = [(4, 1)]
         SKELETON = [(8, 6), (8, 8)]
-        PIG = [(-3, -3)]
-        GRAND_EXCHANGE = [(5, 1)]
-        MINING = [(1, 5)]
         DEATH_KNIGHT = [(8, 7), (10, 7)]
-        DEAD_TREE = [(9, 8)]
+        COPPER_ROCKS = [(2, 0)]
+        JEWELRYCRAFTING = [(1, 3)]
+        BASS_FISHING_SPOT = [(6, 12)]
+        OGRE = [(-5, -5), (-5, -4)]
+        CULTIST_ACOLYTE = [(-1, 13)]
+        WOODCUTTING = [(-2, -3)]
+        BIRCH_TREE = [(-1, 6), (3, 5)]
+        IRON_ROCKS = [(1, 7)]
+        WEAPONCRAFTING = [(2, 1)]
+        SHRIMP_FISHING_SPOT = [(5, 2)]
+        FLYING_SERPENT = [(5, 4), (7, 4)]
+        MINING = [(1, 5)]
+        WOLF = [(-3, 0), (-2, 1)]
+        BANDIT_LIZARD = [(-3, 3)]
+        ASH_TREE = [(-1, 0), (6, 1)]
+        GOLD_ROCKS = [(10, -4)]
+        GRAND_EXCHANGE = [(5, 1)]
+        MAGIC_TREE = [(-1, 15)]
+        OWLBEAR = [(10, 1), (10, 2)]
+        GUDGEON_FISHING_SPOT = [(4, 2)]
+        GEARCRAFTING = [(3, 1)]
         CHICKEN = [(0, 1)]
+        BLUE_SLIME = [(0, -2), (2, -1)]
+        BANK = [(4, 1), (7, 13)]
+        RED_SLIME = [(1, -1), (2, -2)]
+        IMP = [(-1, 12), (0, 13)]
+        DEAD_TREE = [(9, 8)]
+        VAMPIRE = [(10, 6), (10, 8)]
+        SPRUCE_TREE = [(1, 9), (2, 6)]
+        GREEN_SLIME = [(0, -1), (3, -2)]
+        MUSHMUSH = [(5, 3), (6, 4)]
+        PIG = [(-3, -3)]
+        MONSTERS = [(1, 2)]
+        TROUT_FISHING_SPOT = [(7, 12)]
+        COW = [(0, 2)]
+        COOKING = [(1, 1)]
+        YELLOW_SLIME = [(1, -2), (4, -1)]
 
 
-def print_constants(header, constants_name, constants_value=None):
+def print_constants(constants_name, header="", header_indent="", indent_amount=1, constants_value=None):
     if header:
         print(header)
+    indents = indent_amount * "    "
+    if header_indent:
+        print(((indent_amount - 1) * "    ") + header_indent)
     if constants_value is None:
-        [print(constant.upper(), "=", f"\"{constant}\"") for constant in constants_name]
+        [print(indents + constant.upper(), "=", f"\"{constant}\"") for constant in constants_name]
     else:
-        [print(constants_name[i].upper(), "=", constants_value[i]) for i in range(len(constants_value))]
+        [print(indents + constants_name[i].upper(), "=", constants_value[i]) for i in range(len(constants_value))]
+    print()
 
 
 if __name__ == '__main__':
+    from itertools import chain
     from ArtifactsAPI import ArtifactsAPI
 
     artifactsapi = ArtifactsAPI()
     # print_constants("### ITEMS ###\nclass Item:", list(artifactsapi.get_all_items()))
-    print_constants("Effects\nclass Effect:", set(sorted(chain.from_iterable(
-        [[effect["name"] for effect in v["effects"] if "name" in effect] for (k, v) in artifactsapi.get_all_items().items()]))))
+    # print_constants("Effects\nclass Effect:", set(sorted(chain.from_iterable(
+    #     [[effect["name"] for effect in v["effects"] if "name" in effect] for (k, v) in artifactsapi.get_all_items().items()]))))
 
-    # print_constants("### RESOURCES ###class Resource:", list(artifactsapi.get_all_resources()))
-    # from itertools import chain
-    # print_constants("class Drops:", set(chain.from_iterable(
-    #     [[drop["code"] for drop in v["drops"]] for (k, v) in artifactsapi.get_all_resources().items()])))
-    # print_constants("### MAPS ###\nclass Map:", sorted({v["name"] for (k, v) in artifactsapi.get_all_maps().items()}))
+    # print_constants(list(artifactsapi.get_all_resources()),
+    #                 "### RESOURCES ###", "class Resource:")
+    # print_constants(set([v["skill"] for (k, v) in artifactsapi.get_all_resources().items()]),
+    #                 header_indent="class Skills:", indent_amount=2)
+    # print_constants(set(chain.from_iterable(
+    #     [[drop["code"] for drop in v["drops"]] for (k, v) in artifactsapi.get_all_resources().items()])),
+    #     header_indent="class Drops:", indent_amount=2)
+
+    # print_constants(sorted({v["name"] for (k, v) in artifactsapi.get_all_maps().items()}),
+    #                 "### MAPS ###", "class Map:", indent_amount=1)
     # data = [[k, v["content"]] for (k, v) in artifactsapi.get_all_maps().items() if v["content"]]
     # code_positions = {code: [coord for coord, info in data if info['code'] == code]
     #                   for code in {info['code'] for _, info in data}}
-    # print_constants("class Position:", list(code_positions.keys()), list(code_positions.values()))
+    # print_constants(list(code_positions.keys()), constants_value=list(code_positions.values()),
+    #                 header_indent="class Position:", indent_amount=2)
     1
